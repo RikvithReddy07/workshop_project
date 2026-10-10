@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Appointment Booking System{% endblock %}</title>
+    <meta name="description" content="Modern, reliable, and secure online appointment booking platform.">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="navbar-wrapper">
+        <nav class="navbar container" aria-label="Main Navigation">
+            <a href="{{ url_for('index') }}" class="brand-logo" aria-label="Appointment System Home">
+                <span class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <polyline points="9 16 11 18 15 14"></polyline>
+                    </svg>
+                </span>
+                <span class="logo-text">Appoint<span>Flow</span></span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li>
+                    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('book') }}" class="nav-link {% if request.endpoint == 'book' %}active{% endif %}">
+                        Book Appointment
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('appointments') }}" class="nav-link {% if request.endpoint == 'appointments' %}active{% endif %}">
+                        My Appointments
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('contact') }}" class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}">
+                        Contact
+                    </a>
+                </li>
+                <li class="nav-cta-item">
+                    <a href="{{ url_for('book') }}" class="btn btn-primary btn-sm">
+                        <span>Book Now</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Flash Messages Container -->
+    <div class="toast-container container" id="toastContainer" aria-live="polite">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                        <div class="alert-content">
+                            <span class="alert-icon">
+                                {% if category == 'success' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                {% elif category == 'danger' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                {% else %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                {% endif %}
+                            </span>
+                            <span class="alert-text">{{ message }}</span>
+                        </div>
+                        <button type="button" class="btn-close" aria-label="Close" onclick="this.closest('.alert').remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Page Content -->
+    <main class="main-content" id="mainContent">
+        {% if error_title %}
+            <div class="container error-container">
+                <div class="error-card">
+                    <h1>{{ error_title }}</h1>
+                    <p>{{ error_msg }}</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+                </div>
+            </div>
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="app-footer">
+        <div class="container footer-grid">
+            <div class="footer-col brand-col">
+                <div class="brand-logo">
+                    <span class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect><polyline points="9 16 11 18 15 14"></polyline></svg>
+                    </span>
+                    <span class="logo-text">Appoint<span>Flow</span></span>
+                </div>
+                <p class="footer-tagline">Seamless, reliable, and conflict-free appointment scheduling for clients and professionals.</p>
+                <div class="badge-pill">Working Hours: Mon - Fri, 9:00 AM - 5:00 PM</div>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-heading">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('book') }}">Book an Appointment</a></li>
+                    <li><a href="{{ url_for('appointments') }}">My Appointments</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact & Help</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-heading">Security & Reliability</h4>
+                <ul class="footer-links">
+                    <li><span>Zero Duplicate Bookings</span></li>
+                    <li><span>Token-Verified Cancellation</span></li>
+                    <li><span>ACID-Safe Transactions</span></li>
+                    <li><span>Real-time Slot Checking</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 AppointFlow &bull; Appointment Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

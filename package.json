@@ -1,0 +1,10 @@
+{
+  "name": "appointment-booking-system",
+  "version": "1.0.0",
+  "description": "AppointFlow — Appointment Booking System",
+  "scripts": {
+    "dev": "python3 app.py",
+    "start": "python3 app.py",
+    "test": "pytest"
+  }
+}

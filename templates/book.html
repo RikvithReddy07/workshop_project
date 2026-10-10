@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Book an Appointment - AppointFlow{% endblock %}
+
+{% block content %}
+<div class="booking-page-container container">
+    <div class="booking-header text-center">
+        <span class="badge-pill">Reservation Desk</span>
+        <h1 class="page-title">Book an Appointment</h1>
+        <p class="page-subtitle">Select your preferred date, pick an open working hour slot, and provide your details below.</p>
+    </div>
+
+    <div class="booking-layout-grid">
+        <!-- Main Form Card -->
+        <div class="card booking-form-card">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <span class="card-step-badge">Step 1 of 2</span>
+                    <h2 class="card-title">Schedule Information</h2>
+                </div>
+                <div class="slot-status-legend">
+                    <span class="legend-item"><span class="legend-dot available"></span> Available</span>
+                    <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+                    <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form id="bookingForm" method="POST" action="{{ url_for('book') }}" novalidate>
+                    <!-- Form-level Alert / Banner -->
+                    <div id="formAlert" class="alert alert-danger" style="display: none;" role="alert">
+                        <span class="alert-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        </span>
+                        <div class="alert-messages" id="formAlertMessages"></div>
+                    </div>
+
+                    <!-- Row 1: Date & Time Slot Selector -->
+                    <div class="form-section-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span>Choose Date &amp; Working Hour Slot</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group form-col-6">
+                            <label for="appointment_date" class="form-label required">Appointment Date</label>
+                            <div class="input-with-icon">
+                                <input
+                                    type="date"
+                                    id="appointment_date"
+                                    name="appointment_date"
+                                    class="form-control"
+                                    min="{{ today }}"
+                                    value="{{ form_data.get('appointment_date', selected_date or today) }}"
+                                    required
+                                    aria-describedby="dateError"
+                                >
+                                <span class="input-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                </span>
+                            </div>
+                            <span class="field-error" id="dateError" role="alert"></span>
+                            <small class="field-help">Past dates are disabled. Working hours: 9:00 AM - 5:00 PM.</small>
+                        </div>
+
+                        <div class="form-group form-col-6">
+                            <label class="form-label required">Selected Time Slot</label>
+                            <input type="hidden" id="time_slot" name="time_slot" value="{{ form_data.get('time_slot', '') }}" required>
+                            <div id="slotSummaryDisplay" class="selected-slot-preview empty">
+                                <span class="slot-preview-text">Please pick a slot below</span>
+                            </div>
+                            <span class="field-error" id="slotError" role="alert"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Time Slots Container -->
+                    <div class="slots-container-wrapper">
+                        <div class="slots-header">
+                            <label class="form-label">Available Slots for <strong id="slotsDateDisplay">{{ form_data.get('appointment_date', selected_date or today) }}</strong></label>
+                            <div id="slotsLoader" class="slots-loader" style="display: none;">
+                                <div class="spinner-small"></div>
+                                <span>Checking availability...</span>
+                            </div>
+                        </div>
+
+                        <!-- Slots Grid -->
+                        <div class="time-slots-grid" id="timeSlotsGrid" role="radiogroup" aria-label="Available Time Slots">
+                            <!-- Populated dynamically via JS or server rendered fallback -->
+                            {% for slot in working_slots %}
+                                <button
+                                    type="button"
+                                    class="slot-btn {% if form_data.get('time_slot') == slot %}selected{% endif %}"
+                                    data-slot="{{ slot }}"
+                                    role="radio"
+                                    aria-checked="{% if form_data.get('time_slot') == slot %}true{% else %}false{% endif %}"
+                                >
+                                    <span class="slot-clock-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    </span>
+                                    <span class="slot-text">{{ slot }}</span>
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Personal Details -->
+                    <div class="form-section-title mt-4">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Personal Details</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group form-col-12">
+                            <label for="full_name" class="form-label required">Full Name</label>
+                            <div class="input-with-icon">
+                                <input
+                                    type="text"
+                                    id="full_name"
+                                    name="full_name"
+                                    class="form-control"
+                                    placeholder="e.g. Jane Doe"
+                                    value="{{ form_data.get('full_name', '') }}"
+                                    maxlength="100"
+                                    required
+                                    aria-describedby="fullNameError"
+                                >
+                                <span class="input-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </span>
+                            </div>
+                            <span class="field-error" id="fullNameError" role="alert"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group form-col-6">
+                            <label for="email" class="form-label required">Email Address</label>
+                            <div class="input-with-icon">
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="e.g. jane.doe@example.com"
+                                    value="{{ form_data.get('email', '') }}"
+                                    required
+                                    aria-describedby="emailError"
+                                >
+                                <span class="input-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </span>
+                            </div>
+                            <span class="field-error" id="emailError" role="alert"></span>
+                            <small class="field-help">Used to view and manage your appointments.</small>
+                        </div>
+
+                        <div class="form-group form-col-6">
+                            <label for="phone" class="form-label required">Phone Number</label>
+                            <div class="input-with-icon">
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    class="form-control"
+                                    placeholder="e.g. +1 (555) 000-1234"
+                                    value="{{ form_data.get('phone', '') }}"
+                                    required
+                                    aria-describedby="phoneError"
+                                >
+                                <span class="input-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                </span>
+                            </div>
+                            <span class="field-error" id="phoneError" role="alert"></span>
+                            <small class="field-help">Valid phone number with country or area code.</small>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Reason -->
+                    <div class="form-row">
+                        <div class="form-group form-col-12">
+                            <label for="reason" class="form-label required">Reason for Appointment</label>
+                            <textarea
+                                id="reason"
+                                name="reason"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Describe the purpose of your appointment (minimum 3 characters)..."
+                                maxlength="500"
+                                required
+                                aria-describedby="reasonError"
+                            >{{ form_data.get('reason', '') }}</textarea>
+                            <div class="field-char-count">
+                                <span id="reasonCharCount">0</span>/500 characters
+                            </div>
+                            <span class="field-error" id="reasonError" role="alert"></span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg btn-block">
+                            <span class="btn-text">Confirm &amp; Book Appointment</span>
+                            <span class="btn-spinner" style="display: none;">
+                                <span class="spinner-small"></span>
+                                <span>Processing Booking...</span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar / Guidance Card -->
+        <div class="booking-sidebar">
+            <div class="card info-sidebar-card">
+                <div class="card-body">
+                    <h3 class="sidebar-heading">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <span>Booking Guidelines</span>
+                    </h3>
+                    <ul class="guidelines-list">
+                        <li>
+                            <strong>Working Hours:</strong> Slots are offered strictly between 9:00 AM and 5:00 PM.
+                        </li>
+                        <li>
+                            <strong>Collision Protection:</strong> No duplicate bookings can occur for the same date and slot. If someone books simultaneously, our atomic checks reject the conflict immediately.
+                        </li>
+                        <li>
+                            <strong>Cancellation Token:</strong> Upon booking, a private security token is generated for you. Keep this token safe to cancel or reschedule your slot.
+                        </li>
+                        <li>
+                            <strong>Re-opening Slots:</strong> If you cancel your appointment, the slot is made available for others right away.
+                        </li>
+                    </ul>
+
+                    <div class="sidebar-support-box">
+                        <h4>Already booked?</h4>
+                        <p>Look up or manage your scheduled appointments.</p>
+                        <a href="{{ url_for('appointments') }}" class="btn btn-outline btn-sm btn-block">
+                            Manage Appointments &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Success Modal -->
+<div class="modal-overlay" id="successModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+        <div class="modal-header success-header">
+            <div class="modal-success-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <h2 id="modalTitle" class="modal-title">Appointment Confirmed!</h2>
+            <p class="modal-subtitle">Your appointment has been successfully scheduled.</p>
+        </div>
+
+        <div class="modal-body">
+            <div class="appointment-summary-box">
+                <div class="summary-item">
+                    <span class="summary-label">Appointment ID</span>
+                    <strong class="summary-value" id="summaryId">#</strong>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Full Name</span>
+                    <strong class="summary-value" id="summaryName"></strong>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Date &amp; Time</span>
+                    <strong class="summary-value" id="summaryDateTime"></strong>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Email</span>
+                    <span class="summary-value" id="summaryEmail"></span>
+                </div>
+            </div>
+
+            <!-- Cancellation Token Callout -->
+            <div class="token-callout-box">
+                <div class="token-header">
+                    <span class="token-badge">Important: Security Token</span>
+                    <small>Save this token to cancel or modify your appointment later.</small>
+                </div>
+                <div class="token-copy-wrapper">
+                    <input type="text" id="summaryToken" class="token-input" readonly>
+                    <button type="button" class="btn btn-outline btn-sm" id="copyTokenBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span id="copyBtnLabel">Copy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" id="viewAppointmentBtn" class="btn btn-primary btn-block">
+                Go to My Appointments &rarr;
+            </a>
+            <button type="button" class="btn btn-outline btn-block mt-2" onclick="closeSuccessModal()">
+                Book Another Appointment
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

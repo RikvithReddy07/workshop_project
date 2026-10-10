@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Home - AppointFlow Appointment Booking System{% endblock %}
+
+{% block content %}
+<div class="home-hero-section">
+    <div class="container hero-grid">
+        <div class="hero-text-content">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                <span>Smart &amp; Conflict-Free Scheduling</span>
+            </div>
+            <h1 class="hero-title">
+                Effortless Appointments, <br>
+                <span class="gradient-text">Zero Double-Bookings.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Welcome to <strong>AppointFlow</strong>, the modern scheduling platform designed for complete peace of mind. Check real-time working hour slots, reserve appointments with instant validation, and manage your bookings effortlessly.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('book') }}" class="btn btn-primary btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span>Book an Appointment</span>
+                </a>
+                <a href="{{ url_for('appointments') }}" class="btn btn-outline btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>View My Appointments</span>
+                </a>
+            </div>
+
+            <div class="trust-indicators">
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Atomic DB Concurrency</span>
+                </div>
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Working Hours: 9 AM - 5 PM</span>
+                </div>
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>Token Protected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Live Status Card -->
+        <div class="hero-visual">
+            <div class="dashboard-preview-card">
+                <div class="card-glass-header">
+                    <div class="status-indicator">
+                        <span class="status-ping"></span>
+                        <span class="status-title">Live Availability Today ({{ stats.today_date }})</span>
+                    </div>
+                    <span class="badge badge-primary">{{ stats.today_available }} Available</span>
+                </div>
+
+                <div class="stats-metric-grid">
+                    <div class="metric-box">
+                        <span class="metric-num text-success">{{ stats.today_available }}</span>
+                        <span class="metric-label">Open Slots Today</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-num text-warning">{{ stats.today_booked }}</span>
+                        <span class="metric-label">Reserved Today</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-num text-primary">{{ stats.total_active }}</span>
+                        <span class="metric-label">Active Bookings</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-num text-neutral">{{ stats.working_slots_count }}</span>
+                        <span class="metric-label">Daily Capacity</span>
+                    </div>
+                </div>
+
+                <div class="quick-booking-prompt">
+                    <div class="prompt-info">
+                        <h4>Need to reserve a slot?</h4>
+                        <p>Pick a date and choose an available time in under 60 seconds.</p>
+                    </div>
+                    <a href="{{ url_for('book') }}" class="btn btn-primary btn-block">
+                        Select a Date &amp; Time &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Built with Precision &amp; Reliability</h2>
+            <p class="section-subtitle">Every booking is guarded by strict integrity checks and clear, transparent steps.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon bg-indigo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </div>
+                <h3 class="feature-title">Dynamic Time Slots</h3>
+                <p class="feature-desc">Select any future date to see instantly refreshed time slots within business hours (9:00 AM – 5:00 PM). Past dates are automatically locked.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <h3 class="feature-title">Zero Duplicate Bookings</h3>
+                <p class="feature-desc">Protected by partial database uniqueness constraints and atomic SQLite transactions. Even under simultaneous requests, slots are never double-booked.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3 class="feature-title">Secure Cancellation</h3>
+                <p class="feature-desc">Each booking generates a high-entropy cancellation token. Only the verified appointment owner can cancel, instantly freeing the slot for others.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-teal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <h3 class="feature-title">Instant Lookup &amp; Filter</h3>
+                <p class="feature-desc">Find your existing appointments in seconds using your email address, or filter records by date and status (Booked / Cancelled).</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works Steps -->
+<section class="steps-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">How AppointFlow Works</h2>
+            <p class="section-subtitle">A straightforward 3-step scheduling process</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h4>Select Date &amp; Slot</h4>
+                <p>Pick an available calendar date and choose an open 1-hour slot from 9:00 AM to 5:00 PM.</p>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h4>Enter Personal Details</h4>
+                <p>Provide your name, email, phone number, and consultation reason with real-time field validation.</p>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h4>Receive Secure Token</h4>
+                <p>Get immediate confirmation and your unique cancellation token to view or manage your slot anytime.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta-banner-section">
+    <div class="container">
+        <div class="cta-banner">
+            <div class="cta-content">
+                <h2>Ready to schedule your appointment?</h2>
+                <p>Book your preferred date and time slot in just a minute.</p>
+            </div>
+            <div class="cta-button-wrapper">
+                <a href="{{ url_for('book') }}" class="btn btn-light btn-lg">
+                    Book an Appointment Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

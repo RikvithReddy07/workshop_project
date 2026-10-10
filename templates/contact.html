@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Contact & Help - AppointFlow{% endblock %}
+
+{% block content %}
+<div class="contact-page-container container">
+    <div class="contact-header text-center">
+        <span class="badge-pill">Support Center</span>
+        <h1 class="page-title">Contact &amp; Assistance</h1>
+        <p class="page-subtitle">Have questions about our scheduling hours, booking policies, or managing your reservations? We're here to help.</p>
+    </div>
+
+    <div class="contact-layout-grid">
+        <!-- Contact Information Cards -->
+        <div class="contact-info-col">
+            <div class="card contact-card">
+                <div class="card-body">
+                    <h3 class="contact-section-title">Support Hours &amp; Location</h3>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div>
+                            <strong>Standard Operating Hours</strong>
+                            <p>Monday &ndash; Friday: 9:00 AM &ndash; 5:00 PM</p>
+                            <small class="text-muted">Closed on weekends and public holidays</small>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </div>
+                        <div>
+                            <strong>Email Inquiries</strong>
+                            <p><a href="mailto:support@appointflow.example.com">support@appointflow.example.com</a></p>
+                            <small class="text-muted">Average response time: within 2 business hours</small>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </div>
+                        <div>
+                            <strong>Phone Helpline</strong>
+                            <p>+1 (800) 555-APPT (2778)</p>
+                            <small class="text-muted">Direct line for booking verification</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Quick Actions -->
+            <div class="card mt-4 p-4 highlight-support-card">
+                <h4>Quick Self-Service</h4>
+                <p>Did you know you can manage your appointments directly online?</p>
+                <div class="action-btn-row mt-3">
+                    <a href="{{ url_for('book') }}" class="btn btn-primary btn-sm">Book Slot</a>
+                    <a href="{{ url_for('appointments') }}" class="btn btn-outline btn-sm">Find Booking</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQs Column -->
+        <div class="contact-faq-col">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="contact-section-title">Frequently Asked Questions</h3>
+
+                    <div class="faq-accordion">
+                        <details class="faq-item" open>
+                            <summary class="faq-question">How does duplicate booking prevention work?</summary>
+                            <div class="faq-answer">
+                                Our platform uses an atomic database constraint (partial unique index) combined with SQLite immediate locking. Even if two people click "Book" for the exact same date and time slot simultaneously, only the first request succeeds; the second request receives a clear message that the slot is already taken.
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary class="faq-question">What is a cancellation token and why do I need it?</summary>
+                            <div class="faq-answer">
+                                A cancellation token is a secure 32-byte cryptographic code issued exclusively to you upon booking. It protects your appointment from unauthorized tampering or fraudulent cancellation. When cancelling, providing this token verifies your ownership of the booking.
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary class="faq-question">Can I book an appointment for a past date?</summary>
+                            <div class="faq-answer">
+                                No. Both the client-side calendar selector and backend verification strictly prohibit past dates. You can book starting from today and any future business date.
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary class="faq-question">What happens after an appointment is cancelled?</summary>
+                            <div class="faq-answer">
+                                The appointment record is preserved with a "Cancelled" status for audit and record purposes, and the database constraint is lifted so that the slot immediately reopens for anyone else to reserve.
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary class="faq-question">How do I look up my scheduled appointments?</summary>
+                            <div class="faq-answer">
+                                Visit the <a href="{{ url_for('appointments') }}">My Appointments</a> page and type the email address you used during reservation into the lookup bar. All past and upcoming bookings matching that email will be displayed.
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
